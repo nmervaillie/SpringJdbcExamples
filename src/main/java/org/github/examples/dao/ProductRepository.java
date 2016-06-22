@@ -43,35 +43,4 @@ public class ProductRepository extends JdbcRepository<Product, Integer> {
         }
     };
 
-//            new RowMapper<Product>() {
-//
-//        public Product mapRow(ResultSet rs, int rowNum) throws SQLException {
-//
-//            Product p = new Product();
-//            p.setId(rs.getInt("id"));
-//            p.setCategoryId(new Category(rs.getInt("category_id")));
-//            p.setName(rs.getString("name"));
-//            p.setDescription(rs.getString("description"));
-//            p.setPrice(rs.getFloat("price"));
-//
-//
-//            <column name="name" type="varchar(100)">
-//            <constraints nullable="false" />
-//            </column>
-//            <column name="description" type="varchar(1000)">
-//            <constraints nullable="false" />
-//            </column>
-//            <column name="price" type="float" />
-//            <column name="image_url" type="varchar(200)" />
-//            <column name="soldout" type="boolean" />
-//            <column name="promotion" type="boolean" />
-//
-//                    ,
-//                    rs.getString("user_name"),
-//                    rs.getString("contents"),
-//                    rs.getTimestamp("created_time")
-//            );
-//        }
-//    };
-
 }
