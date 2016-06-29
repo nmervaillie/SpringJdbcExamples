@@ -16,7 +16,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -52,6 +54,26 @@ public class H2WebIntegrationTests {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value("test product"))
         .andExpect(jsonPath("$.description").value("test product description"));
+    }
+
+    @Test
+    public void shouldCreateProduct() throws Exception {
+
+        // Given
+        long initialCount = productRepository.count();
+
+        // When
+        restMvc.perform(post("/products").accept(MediaType.APPLICATION_JSON_UTF8)
+                .contentType(MediaType.APPLICATION_XML)
+                .content("<product><categoryId>0</categoryId><name>a product</name><description>a description</description></product>"))
+
+        // THEN
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.name").value("a product"))
+        .andExpect(jsonPath("$.description").value("a description"));
+
+        assertThat(productRepository.count()).isEqualByComparingTo(initialCount + 1);
     }
 
     @Test
