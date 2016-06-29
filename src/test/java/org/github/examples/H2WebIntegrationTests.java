@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -44,14 +45,28 @@ public class H2WebIntegrationTests {
         // Given
 
         // When
-        restMvc.perform(get("/products/0")
-                .contentType(MediaType.APPLICATION_JSON_UTF8))
+        restMvc.perform(get("/products/0").accept(MediaType.APPLICATION_JSON_UTF8))
 
         // THEN
+        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.name").value("test product"))
         .andExpect(jsonPath("$.description").value("test product description"));
+    }
 
+    @Test
+    public void testReadProductXml() throws Exception {
+
+        // Given
+
+        // When
+        restMvc.perform(get("/products/0").accept(MediaType.APPLICATION_XML))
+
+        // THEN
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(xpath("/product/name").string("test product"))
+        .andExpect(xpath("/product/description").string("test product description"));
     }
 
 
