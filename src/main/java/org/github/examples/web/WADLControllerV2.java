@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
 import org.jvnet.ws.wadl.Application;
@@ -22,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,6 +33,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.condition.ConsumesRequestCondition;
 import org.springframework.web.servlet.mvc.condition.ProducesRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -72,6 +76,8 @@ public class WADLControllerV2 {
             Set<RequestMethod> httpMethods =  mappingInfo.getMethodsCondition().getMethods();
             ProducesRequestCondition producesRequestCondition = mappingInfo.getProducesCondition();
             Set<MediaType> mediaTypes = producesRequestCondition.getProducibleMediaTypes();
+            ConsumesRequestCondition consumesRequestCondition = mappingInfo.getConsumesCondition();
+            Set<MediaType> mediaTypesConsumed = consumesRequestCondition.getConsumableMediaTypes();
             Resource wadlResource = null;
             for (RequestMethod httpMethod : httpMethods) {
                 org.jvnet.ws.wadl.Method wadlMethod = new org.jvnet.ws.wadl.Method();
@@ -121,6 +127,36 @@ public class WADLControllerV2 {
                             waldParam.setRequired(true);
                             wadlRequest.getParam().add(waldParam);
                             waldParam.setType(nm);
+                        } else if (annotation2 instanceof RequestBody) {
+
+                            Annotation[] paramAnotation = paramType.getAnnotations();
+
+                            QName nm2 = null;
+                            for(Annotation a: paramAnotation){
+                                if(a instanceof XmlType){
+                                    XmlType xmlType = (XmlType) a;
+                                    nm2 = new QName(xmlType.namespace(),xmlType.name(),"");
+                                }
+                                if (a instanceof XmlRootElement) {
+                                    XmlRootElement xmlType = (XmlRootElement) a;
+                                    nm2 = new QName(xmlType.namespace(),xmlType.name(),"");
+                                }
+                            }
+                            Representation wadlRepresentation = new Representation();
+                            wadlRepresentation.setMediaType(MediaType.APPLICATION_XML_VALUE);
+                            if(nm2 != null) {
+//                                wadlRepresentation.setElement(element);
+//                                Param waldParam = new Param();
+//                                waldParam.setName((handlerMethod.getMethodParameters()[0]).getParameterName());
+//                                waldParam.setStyle(ParamStyle.QUERY);
+//                                waldParam.setRequired(param2.required());
+//                                String defaultValue = cleanDefault(param2.defaultValue());
+//                                if ( !defaultValue.equals("") ) {
+//                                    waldParam.setDefault(defaultValue);
+//                                }
+//                                waldParam.setType(nm);
+                            }
+                            wadlRequest.getRepresentation().add(wadlRepresentation);
                         }
                     }
                 }
