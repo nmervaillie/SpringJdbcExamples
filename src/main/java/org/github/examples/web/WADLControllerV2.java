@@ -20,6 +20,8 @@ import org.jvnet.ws.wadl.Resource;
 import org.jvnet.ws.wadl.Resources;
 import org.jvnet.ws.wadl.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -142,20 +144,19 @@ public class WADLControllerV2 {
                                     nm2 = new QName(xmlType.namespace(),xmlType.name(),"");
                                 }
                             }
+                            // http://www.devsumo.com/technotes/2015/01/cxf-missing-wadl-method-parameter-element-types-with-json-jax-rs-services/
+                            // http://docs.oracle.com/cd/E41633_01/pt853pbh1/eng/pt/tibr/concept_UnderstandingWADLDocuments-7b7fd7.html
+                            Param wadlParam = new Param();
+                            ParameterNameDiscoverer paramNameResolver = new LocalVariableTableParameterNameDiscoverer();
+                            wadlParam.setName(paramNameResolver.getParameterNames(javaMethod)[0]);
+                            wadlParam.setStyle(ParamStyle.PLAIN);
+                            wadlParam.setRequired(true);
+                            wadlParam.setType(nm2);
+                            wadlRequest.getParam().add(wadlParam);
+
                             Representation wadlRepresentation = new Representation();
                             wadlRepresentation.setMediaType(MediaType.APPLICATION_XML_VALUE);
-                            if(nm2 != null) {
-//                                wadlRepresentation.setElement(element);
-//                                Param waldParam = new Param();
-//                                waldParam.setName((handlerMethod.getMethodParameters()[0]).getParameterName());
-//                                waldParam.setStyle(ParamStyle.QUERY);
-//                                waldParam.setRequired(param2.required());
-//                                String defaultValue = cleanDefault(param2.defaultValue());
-//                                if ( !defaultValue.equals("") ) {
-//                                    waldParam.setDefault(defaultValue);
-//                                }
-//                                waldParam.setType(nm);
-                            }
+                            wadlRepresentation.setElement(nm2);
                             wadlRequest.getRepresentation().add(wadlRepresentation);
                         }
                     }
